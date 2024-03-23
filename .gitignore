@@ -1,0 +1,100 @@
+HELP.md
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### STATIC ###
+/study/src/main/resources/static/js/
+/study/src/main/resources/static/css/
+/study/src/main/resources/static/res/
+/study/src/main/resources/static/temp/
+/study/src/main/resources/static/images/
+
+### SSH KEY ###
+/study/src/main/resources/config/certs
+
+### DB ###
+database.properties
+db_config.txt
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+out/
+target/
+!**/src/main/**/out/
+!**/src/test/**/out/
+
+### Eclipse ###
+.settings/
+
+### Maven ###
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+
+### Gradle ###
+.gradle
+build/
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+### VS Code ###
+.vscode/
+
+### macOS ###
+.DS_Store
+
+### Windows ###
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+### Linux ###
+*~
+
+### Kotlin ###
+.kotlin
+
+### Other common directories and files to ignore ###
+logs/
+node_modules/
+*.log
+
+
+### JAR/WAR files ###
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+### Temporary files ###
+temp/
+tmp/
+*.tmp
+*.bak
+*.swp

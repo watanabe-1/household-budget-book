@@ -1,0 +1,42 @@
+spring:
+  application:
+    name: study
+  profiles:
+    active: devel
+  devtools:
+    restart:
+      enabled: true
+      additional-paths:
+        - src/main/kotlin/**
+    livereload:
+      enabled: true
+
+  servlet:
+    multipart:
+      resolve-lazily: true
+      max-file-size: 2MB
+      max-request-size: 20MB
+  main:
+    allow-bean-definition-overriding: true
+server:
+  port: 8080
+  servlet:
+    context-path: /study/
+  error:
+    path: /errors
+  compression:
+    enabled: true
+    mime-types:
+      - text/css
+      - text/html
+      - application/javascript
+      - application/json
+security:
+  jwt:
+    rsa:
+      private-key: classpath:config/certs/private.pem
+      public-key: classpath:config/certs/public.pem
+    token:
+      expiration: 60
+    refresh-token:
+      expiration: 1440

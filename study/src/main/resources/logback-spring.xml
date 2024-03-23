@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <!-- プロパティファイルの読み込み(環境依存の外部化) -->
+    <!-- <property> タグの file 属性を指定すれば、別途作成したプロパティファイルを読み込める。 -->
+    <!-- property file="config/properties/logger.properties" /> -->
+    <!-- file 属性の代わりに resource 属性を指定すれば、クラスパス上のファイルを指定することもできる。 -->
+    <property resource="./config/properties/logger.properties"/>
+    <!-- 以下の用に直接変数宣言も可 -->
+    <!-- property name="app.log.dir" value="/logs" /> -->
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- コンソールにログを出力するための、アペンダ定義を指定する。 出力先を標準出力にするか、標準エラーにするか選べるが、指定しない場合は、標準出力となる。-->
+        <encoder>
+            <!-- ログの出力形式を指定する。何も記述しなければ、メッセージだけが出力される。 時刻やメッセージレベルなど、業務要件に合わせて出力させる。 ここでは”ラベル:値<TAB>ラベル:値<TAB>…”形式のLTSV(Labeled Tab Separated Value)フォーマットを設定している。 -->
+            <pattern>
+                <![CDATA[date:%d{yyyy-MM-dd HH:mm:ss}\tthread:%thread\trequestid:%X{requestid}\tlevel:%-5level\tlogger:%-48logger{48}\tmessage:%msg%n]]>
+            </pattern>
+        </encoder>
+    </appender>
+
+    <appender name="APPLICATION_LOG_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- アプリケーションログを出力するための、アペンダ定義を指定する。 -->
+        <!-- ${<変数名>:-<デフォルト値>} という形式で、変数が定義されていなかった場合のデフォルト値を指定できる。 -->
+        <file>${user.dir}${app.log.dir:-/logs}/study-books-application.log
+        </file>        <!-- カレントファイル名(出力中のログのファイル名)を指定する。固定のファイル名としたい場合は指定すること。 <file>ログファイル名</file>を指定しないと、下のパターンの名称で出力される。 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>
+                ${user.dir}${app.log.dir:-/logs}${app.log.bk:-/bk}/study-books-application-%d{yyyyMMddHH}.log.zip
+            </fileNamePattern>
+            <!-- ローテーション後のファイル名を指定する。通常は、日付か時間の形式が、多く採用される。 誤ってHHをhhと設定してしまうと、24時間表記されないため注意すること。 HHまでしていしているため1時間ごとにファイルが切り替わる -->
+            <!-- <maxHistory>25</maxHistory> ローテーションしたファイルをいくつ残すかを指定する。 今は削除されないようにコメントアウト -->
+        </rollingPolicy>
+        <encoder>
+            <!-- ログファイルの文字コードを指定する。-->
+            <charset>UTF-8</charset>
+            <pattern>
+                <![CDATA[date:%d{yyyy-MM-dd HH:mm:ss}\tthread:%thread\tuser:%X{user:-no_user}\trequestid:%X{requestid}\tlevel:%-5level\tlogger:%-48logger{48}\tmessage:%msg%n]]>
+            </pattern>
+        </encoder>
+    </appender>
+
+    <appender name="APPLICATION_CLIENT_LOG_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${user.dir}${app.log.dir:-/logs}/study-books-application-client.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>
+                ${user.dir}${app.log.dir:-/logs}${app.log.bk:-/bk}/study-books-application-client-%d{yyyyMMddHH}.log.zip
+            </fileNamePattern>
+            <!-- <maxHistory>25</maxHistory> ローテーションしたファイルをいくつ残すかを指定する。 今は削除されないようにコメントアウト -->
+        </rollingPolicy>
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>
+                <![CDATA[date:%d{yyyy-MM-dd HH:mm:ss}\tthread:%thread\tuser:%X{user:-no_user}\trequestid:%X{requestid}\tlevel:%-5level\tlogger:%-48logger{48}\tmessage:%msg%n]]>
+            </pattern>
+        </encoder>
+    </appender>
+
+    <appender name="MONITORING_LOG_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- デフォルトでアプリケーションログが出力されるように設定する。 -->
+        <file>${user.dir}${app.log.dir:-/logs}/study-books-monitoring.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>
+                ${user.dir}${app.log.dir:-/logs}${app.log.bk:-/bk}/study-books-monitoring-%d{yyyyMMdd}.log.zip
+            </fileNamePattern>
+            <!-- <maxHistory>7</maxHistory> ローテーションしたファイルをいくつ残すかを指定する。 今は削除されないようにコメントアウト -->
+        </rollingPolicy>
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>
+                <![CDATA[date:%d{yyyy-MM-dd HH:mm:ss}\trequestid:%X{requestid}\tlevel:%-5level\tmessage:%msg%n]]>
+            </pattern>
+        </encoder>
+    </appender>
+
+    <!-- Application Loggers -->
+    <logger name="org.book.app">
+        <!-- ロガー名は、com.book.app以下のロガーが、debugレベル以上のログを出力するように設定する。 -->
+        <level value="debug"/>
+    </logger>
+
+    <!-- helper配下はトレースログを出力できるようにする -->
+    <logger name="org.book.app.study.helper">
+        <level value="trace"/>
+    </logger>
+
+    <!-- リクエストのトレースログをトレースレベルで出力 -->
+    <logger name="org.book.app.common.logging.ReauestLoggingListener">
+        <level value="trace"/>
+    </logger>
+
+    <!-- セッションのトレースログをトレースレベルで出力 -->
+    <logger name="org.book.app.common.logging.HttpSessionEventLoggingListener">
+        <level value="trace"/>
+    </logger>
+
+    <!-- クライアントエラーログ -->
+    <logger name="org.book.app.study.api.LogApiController" level="error" additivity="false">
+        <appender-ref ref="APPLICATION_CLIENT_LOG_FILE"/>
+    </logger>
+
+    <!-- 3rdparty Loggers -->
+    <logger name="org.springframework">
+        <level value="warn"/>
+    </logger>
+
+    <logger name="org.springframework.web.servlet">
+        <level value="info"/>
+    </logger>
+
+    <logger name="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping">
+        <level value="trace"/>
+    </logger>
+
+    <logger name="org.springframework.jdbc.core.JdbcTemplate">
+        <level value="debug"/>
+    </logger>
+
+    <root level="warn">
+        <!-- <logger>の指定が無いロガーが、warnレベル以上のログを出力するように設定する。  デフォルトでConsoleAppender,RollingFileAppender(アプリケーションログ)が使用されるように設定する。 -->
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="APPLICATION_LOG_FILE"/>
+    </root>
+
+</configuration>

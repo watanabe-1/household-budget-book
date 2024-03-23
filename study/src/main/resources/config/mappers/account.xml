@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.book.app.study.mapper.AccountMapper">
+    <select id="findAll" resultType="org.book.app.study.model.entity.Account">
+        select SERIAL_KEY, USER_ID, PASSWORD, USER_NAME, ACCOUNT_TYPE, REFRESH_TOKEN, INS_DATE, INS_USER, UPD_DATE,
+        UPD_USER from ACCOUNT
+        order by USER_ID
+    </select>
+    <select id="findOne" resultType="org.book.app.study.model.entity.Account">
+        select SERIAL_KEY, USER_ID, PASSWORD, USER_NAME, ACCOUNT_TYPE, REFRESH_TOKEN, INS_DATE, INS_USER, UPD_DATE,
+        UPD_USER from ACCOUNT
+        where USER_ID = #{userId}
+    </select>
+    <insert id="saveBulk" parameterType="java.util.List">
+        insert into ACCOUNT (USER_ID, PASSWORD, USER_NAME, ACCOUNT_TYPE, REFRESH_TOKEN, INS_DATE, INS_USER, UPD_DATE,
+        UPD_USER) values
+        <foreach collection="accList" item="acc" separator=",">
+            (#{acc.userId}, #{acc.password}, #{acc.userName}, #{acc.accountType}, #{acc.refreshToken}, #{acc.insDate},
+            #{acc.insUser}, #{acc.updDate}, #{acc.updUser})
+        </foreach>
+    </insert>
+    <insert id="saveOne">
+        insert into ACCOUNT (USER_ID, PASSWORD, USER_NAME, ACCOUNT_TYPE, REFRESH_TOKEN, INS_DATE, INS_USER, UPD_DATE,
+        UPD_USER)
+        values (#{userId}, #{password}, #{userName}, #{accountType}, #{refreshToken}, #{insDate}, #{insUser},
+        #{updDate}, #{updUser})
+    </insert>
+    <update id="updateAll">
+        update ACCOUNT set USER_ID = #{userId}, PASSWORD = #{password}, USER_NAME = #{userName}, ACCOUNT_TYPE =
+        #{accountType}, REFRESH_TOKEN = #{refreshToken}, UPD_DATE = #{updDate}, UPD_USER = #{updUser}
+    </update>
+    <update id="updateOne">
+        update ACCOUNT set USER_ID = #{acc.userId}, PASSWORD = #{acc.password}, USER_NAME = #{acc.userName},
+        ACCOUNT_TYPE = #{acc.accountType}, REFRESH_TOKEN = #{acc.refreshToken}, UPD_DATE = #{acc.updDate}, UPD_USER =
+        #{acc.updUser}
+        where USER_ID = #{userIdWhere}
+    </update>
+    <update id="updateRefreshToken">
+        update ACCOUNT set REFRESH_TOKEN = #{acc.refreshToken}, UPD_DATE = #{acc.updDate}, UPD_USER =
+        #{acc.updUser}
+        where USER_ID = #{userIdWhere}
+    </update>
+    <delete id="deleteAll">
+        delete from ACCOUNT
+    </delete>
+    <delete id="deleteOne">
+        delete from ACCOUNT
+        where USER_ID = #{userId}
+    </delete>
+</mapper>
