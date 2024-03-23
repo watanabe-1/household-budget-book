@@ -11,9 +11,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder
 
 @SpringBootTest
-class BaseTest {
+open class BaseTest {
     @BeforeEach
-    protected fun setUp() {
+    protected open fun setUp() {
         // test用tempディレクトリの作成
         StudyTestUtil.makeTestTempDir()
         // ログイン情報の設定

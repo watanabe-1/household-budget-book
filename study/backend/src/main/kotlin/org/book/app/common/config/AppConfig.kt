@@ -9,7 +9,6 @@ import org.springframework.context.MessageSource
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.support.ReloadableResourceBundleMessageSource
-import org.springframework.lang.NonNull
 import org.springframework.validation.Validator
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer
@@ -25,7 +24,6 @@ class AppConfig : WebMvcConfigurer {
      * @return メッセージソース
      */
     @Bean
-    @NonNull
     fun messageSource(): MessageSource {
         val messageSource = ReloadableResourceBundleMessageSource()
         // ValidationMessage.propertiesを使用
@@ -36,6 +34,7 @@ class AppConfig : WebMvcConfigurer {
         )
         // メッセージプロパティの文字コードを指定
         messageSource.setDefaultEncoding(StandardCharsets.UTF_8.name())
+        
         return messageSource
     }
 
@@ -45,10 +44,10 @@ class AppConfig : WebMvcConfigurer {
      * @return バリデータ
      */
     @Bean
-    @NonNull
     fun validator(): LocalValidatorFactoryBean {
         val localValidatorFactoryBean = LocalValidatorFactoryBean()
         localValidatorFactoryBean.setValidationMessageSource(messageSource())
+
         return localValidatorFactoryBean
     }
 
@@ -80,7 +79,7 @@ class AppConfig : WebMvcConfigurer {
      *
      * @return
      */
-    override fun configureDefaultServletHandling(@NonNull configurer: DefaultServletHandlerConfigurer) {
+    override fun configureDefaultServletHandling(configurer: DefaultServletHandlerConfigurer) {
         // デフォルトサーブレットへの転送機能を有効化
         // これを許可することによって静的コンテンツ(cssやjsなど)へのアクセスを許可
         configurer.enable()
@@ -92,7 +91,6 @@ class AppConfig : WebMvcConfigurer {
      * @return
      */
     @Bean
-    @NonNull
     fun traceReauestInterceptor(): ReauestLoggingListener {
         return ReauestLoggingListener()
     }
@@ -121,7 +119,7 @@ class AppConfig : WebMvcConfigurer {
      * addInterceptorsを追加<br></br>
      * 複数可
      */
-    override fun addInterceptors(@NonNull registry: InterceptorRegistry) {
+    override fun addInterceptors(registry: InterceptorRegistry) {
         registry.addInterceptor(traceReauestInterceptor()).addPathPatterns("/**")
             .excludePathPatterns("/resources/**")
     }

@@ -4,14 +4,14 @@ HELP.md
 !**/src/test/**/build/
 
 ### STATIC ###
-/study/src/main/resources/static/js/
-/study/src/main/resources/static/css/
-/study/src/main/resources/static/res/
-/study/src/main/resources/static/temp/
-/study/src/main/resources/static/images/
+/study/backend/src/main/resources/static/js/
+/study/backend/src/main/resources/static/css/
+/study/backend/src/main/resources/static/res/
+/study/backend/src/main/resources/static/temp/
+/study/backend/src/main/resources/static/images/
 
 ### SSH KEY ###
-/study/src/main/resources/config/certs
+/study/backend/src/main/resources/config/certs
 
 ### DB ###
 database.properties
