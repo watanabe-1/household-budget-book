@@ -1,4 +1,4 @@
-import com.github.gradle.node.NodeExtension
+import com.github.gradle.node.npm.task.NpmTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.springframework.boot.gradle.tasks.bundling.BootJar
 import org.springframework.boot.gradle.tasks.run.BootRun
@@ -6,7 +6,7 @@ import org.springframework.boot.gradle.tasks.run.BootRun
 plugins {
     id("org.springframework.boot") version "3.2.3"
     id("io.spring.dependency-management") version "1.1.4"
-    id("com.github.node-gradle.node") version "7.0.1"
+    id("com.github.node-gradle.node") version "7.0.2"
     kotlin("jvm") version "1.9.22"
     kotlin("plugin.spring") version "1.9.22"
 }
@@ -40,20 +40,6 @@ project(":backend") {
         options.compilerArgs = listOf("-proc:none")
     }
 
-    tasks.register<Delete>("cleanGen") {
-        val dirBaseName = "src/main/resources/static/"
-        val dirNames = listOf("css", "res", "js")
-        val gitKeep = ".gitkeep"
-        dirNames.forEach { dirName ->
-            val targetDir = file("$dirBaseName$dirName")
-            targetDir.listFiles()?.forEach { file ->
-                if (file.name != gitKeep) {
-                    delete(file)
-                }
-            }
-        }
-    }
-
     tasks.named<BootJar>("bootJar") {
         duplicatesStrategy = DuplicatesStrategy.INCLUDE
     }
@@ -78,18 +64,6 @@ project(":backend") {
     tasks.withType<Test> {
         useJUnitPlatform()
     }
-
-//    あとでfrontendにもってきたい
-    tasks.register("webpack", Task::class) {
-        dependsOn("cleanGen")
-        mustRunAfter("cleanGen")
-    }
-
-    tasks.named("build") {
-        dependsOn("webpack")
-        mustRunAfter("webpack")
-    }
-//あとでfrontendにもってきたい
 
     dependencyManagement {
         dependencies {
@@ -121,12 +95,12 @@ project(":backend") {
         implementation("org.mybatis.spring.boot:mybatis-spring-boot-starter")
         implementation("com.googlecode.juniversalchardet:juniversalchardet")
         implementation("org.postgresql:postgresql")
-        implementation("commons-io:commons-io")
         implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-csv")
         implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
         implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
         implementation("org.apache.pdfbox:pdfbox")
         implementation("org.jetbrains.kotlin:kotlin-reflect")
+        implementation("commons-io:commons-io")
         testImplementation("io.mockk:mockk")
         testImplementation("org.springframework.boot:spring-boot-starter-test")
         testImplementation("org.springframework.security:spring-security-test")
@@ -139,9 +113,17 @@ project(":backend") {
 project(":frontend") {
     apply(plugin = "com.github.node-gradle.node")
 
-    configure<NodeExtension> {
-        version = "18.15.0"
+    node {
+        version = "21.7.1"
         download = true
+    }
+
+    tasks.register("buildNext", NpmTask::class) {
+        args = listOf("run", "build")
+    }
+
+    tasks.register("runDevNext", NpmTask::class) {
+        args = listOf("run", "dev")
     }
 }
 

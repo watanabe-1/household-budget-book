@@ -1,18 +1,18 @@
 package org.book.app.study.service
 
 import org.book.app.study.enums.type.AccountType
+import org.book.app.study.model.dto.TokenDto
 import org.book.app.study.model.properties.RefreshTokenProperties
 import org.book.app.study.model.properties.TokenProperties
 import org.book.app.study.util.StudyUtils
 import org.springframework.security.core.Authentication
-import org.springframework.security.core.GrantedAuthority
+import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder
 import org.springframework.security.oauth2.jwt.JwtClaimsSet
 import org.springframework.security.oauth2.jwt.JwtEncoder
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters
 import org.springframework.stereotype.Service
 import java.time.temporal.ChronoUnit
-import java.util.stream.Collectors
 
 
 /**
@@ -40,20 +40,35 @@ class TokenService(
      * @param authentication
      * @return
      */
-    fun generateToken(authentication: Authentication): String {
+    fun generateToken(authentication: Authentication): TokenDto {
         val now = StudyUtils.getNowDate().toInstant()
-        val scope: String = authentication.authorities.stream()
-            .map { obj: GrantedAuthority -> obj.authority }
-            .collect(Collectors.joining(" "))
+        val expiresAt = now.plus(tokenProperties.expiration, ChronoUnit.MINUTES)
+        val subject = authentication.name
+        val scope = authentication.authorities.joinToString(" ") { it.authority }
+
+        // リフレッシュトークンで認証が行われたとき
+        val updatedScope = if (scope.contains(AccountType.REFRESH.baseRole)) {
+            accountService.findOne(subject)?.let { account ->
+                AccountType.codeOf(account.accountType).role
+            } ?: throw UsernameNotFoundException("User not found")
+        } else {
+            scope
+        }
+
         val claims = JwtClaimsSet.builder()
             .issuer("self")
             .issuedAt(now)
-            .expiresAt(now.plus(tokenProperties.expiration, ChronoUnit.MINUTES))
-            .subject(authentication.name)
-            .claim("scope", scope)
+            .expiresAt(expiresAt)
+            .subject(subject)
+            .claim("scope", updatedScope)
             .build()
 
-        return encoder.encode(JwtEncoderParameters.from(claims)).tokenValue
+        return TokenDto(
+            encoder.encode(JwtEncoderParameters.from(claims)).tokenValue,
+            expiresAt.epochSecond,
+            subject,
+            updatedScope
+        )
     }
 
     /**
@@ -64,7 +79,7 @@ class TokenService(
      */
     fun generateRefreshToken(authentication: Authentication): String {
         val now = StudyUtils.getNowDate().toInstant()
-        val scope: String = AccountType.REFRESH.role
+        val scope = AccountType.REFRESH.role
         val claims = JwtClaimsSet.builder()
             .issuer("self")
             .issuedAt(now)

@@ -1,0 +1,4 @@
+../../db/sql/DDL/ALL/CREATE_ALL.sql
+../../db/sql/DML/INSERT/DEFAULT.sql
+../../db/sql/DML/INSERT/INSERT_CODELIST.sql
+../../db/sql/DML/INSERT/INSERT_CODELKUP.sql

@@ -47,7 +47,7 @@ internal class StudyUtilsTest {
         SecurityContextHolder.getContext().authentication = authentication
 
         val userId = StudyUtils.getLoginUser()
-        assertEquals(StudyUtils.getNoUser(), userId)
+        assertEquals("notAppUserDetails", userId)
     }
 
     @Test

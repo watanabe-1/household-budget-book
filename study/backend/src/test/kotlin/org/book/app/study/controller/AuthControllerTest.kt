@@ -4,6 +4,7 @@ import io.mockk.*
 import org.book.app.common.config.JwtConfig
 import org.book.app.common.config.WebSecurityConfig
 import org.book.app.common.exception.BusinessException
+import org.book.app.study.model.dto.TokenDto
 import org.book.app.study.model.entity.Account
 import org.book.app.study.model.response.TokenResponse
 import org.book.app.study.service.AccountService
@@ -93,7 +94,9 @@ internal class AuthControllerTest {
     @Test
     fun `token() should return TokenResponse when authentication is successful`() {
         val authentication = UsernamePasswordAuthenticationToken("user", "password")
-        every { tokenService.generateToken(any()) } returns "MockToken"
+        every { tokenService.generateToken(any()) } returns TokenDto(
+            "MockToken", 1, "", ""
+        )
         every { tokenService.generateRefreshToken(any()) } returns "MockRefreshToken"
 
         val result = authController.token(authentication)
@@ -110,7 +113,9 @@ internal class AuthControllerTest {
         every { jwtAuthenticationToken.name } returns "user"
         every { jwtAuthenticationToken.token.tokenValue } returns "MockRefreshToken"
         every { tokenService.verifyRefreshToken(any(), any()) } returns true
-        every { tokenService.generateToken(any()) } returns "NewMockToken"
+        every { tokenService.generateToken(any()) } returns TokenDto(
+            "NewMockToken", 1, "", ""
+        )
 
         val result = authController.refresh(jwtAuthenticationToken)
 

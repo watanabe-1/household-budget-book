@@ -2,6 +2,7 @@ package org.book.app.study.controller
 
 import org.book.app.common.exception.BusinessException
 import org.book.app.study.model.response.TokenResponse
+import org.book.app.study.model.response.UserResponse
 import org.book.app.study.service.TokenService
 import org.book.app.study.util.logger
 import org.springframework.security.core.Authentication
@@ -33,12 +34,17 @@ class AuthController(private val tokenService: TokenService) {
     @PostMapping("/oauth2/token")
     fun token(authentication: Authentication): TokenResponse {
         logger.debug("Token requested for user: '{}'", authentication.name)
-        val token: String = tokenService.generateToken(authentication)
-        logger.debug("Token granted: {}", token)
-        val refreshToken: String = tokenService.generateRefreshToken(authentication)
+        val tokenDto = tokenService.generateToken(authentication)
+        logger.debug("Token granted: {}", tokenDto.token)
+        val refreshToken = tokenService.generateRefreshToken(authentication)
         logger.debug("Refresh Token granted: {}", refreshToken)
 
-        return TokenResponse(token, refreshToken)
+        return TokenResponse(
+            tokenDto.token,
+            refreshToken,
+            tokenDto.expiresAt,
+            UserResponse(tokenDto.name, tokenDto.role)
+        )
     }
 
     /**
@@ -50,21 +56,21 @@ class AuthController(private val tokenService: TokenService) {
      */
     @PostMapping("/oauth2/refresh")
     fun refresh(authentication: JwtAuthenticationToken): TokenResponse {
-        val refreshToken: String = authentication.token.tokenValue
+        val refreshToken = authentication.token.tokenValue
         logger.debug("Request RefreshToken: {}", refreshToken)
 
         return tokenService.verifyRefreshToken(refreshToken, authentication.name).takeIf { it }?.let {
             logger.debug("Refresh Token requested for user: '{}'", authentication.name)
-            val token: String = tokenService.generateToken(authentication)
-            logger.debug("Token granted: {}", token)
+            val tokenDto = tokenService.generateToken(authentication)
+            logger.debug("Token granted: {}", tokenDto.token)
 
-            TokenResponse(token, refreshToken)
+            TokenResponse(tokenDto.token, refreshToken, tokenDto.expiresAt, UserResponse(tokenDto.name, tokenDto.role))
         } ?: throw BusinessException("1.01.01.1012")
     }
 
     /**
-     * Refresh Tokenの検証とTokenの発行
-     * トークン認証が通ったかつ権限がREFRESHの時のみ呼ばれる想定
+     * リフレッシュトークンの破棄
+     * トークン認証が通った時のみ呼ばれる想定
      *
      * @param authentication
      * @return

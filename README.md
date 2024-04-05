@@ -15,8 +15,8 @@
 - Kotlin のフレームワークとして、[Spring Boot](https://spring.io/projects/spring-boot)使用
 - Kotlin のビルドツールとして[Gradle](https://gradle.org/)を使用
 - JavaScript のパッケージ管理システムとして node.js 、 npm を使用 → [node.js](https://nodejs.org/ja/)
-    - gradel から利用するため node.js をインストールしていなくても実行可能
-- db は PostgreSQL を使用 → [PostgreSQL](https://www.enterprisedb.com/downloads/postgres-postgresql-downloads)
+    - gradle から利用するため node.js をインストールしていなくても実行可能
+- db は PostgresSQL を使用 → [PostgresSQL](https://www.enterprisedb.com/downloads/postgres-postgresql-downloads)
 - RSA Public & Private
   Keysの作成にはopensslを使用→ [openssl](https://slproweb.com/products/Win32OpenSSL.html)
 
@@ -24,9 +24,9 @@
 
 1. db 環境の作成
 
-    - PostgreSQL をインストール → [PostgreSQL](https://www.enterprisedb.com/downloads/postgres-postgresql-downloads)
+    - PostgresSQL をインストール → [PostgresSQL](https://www.enterprisedb.com/downloads/postgres-postgresql-downloads)
 
-   詳しいインストール方法は右記サイトなどを参考に → [PostgreSQL を Windows にインストールするには](https://qiita.com/tom-sato/items/037b8f8cb4b326710f71)
+   詳しいインストール方法は右記サイトなどを参考に → [PostgresSQL を Windows にインストールするには](https://qiita.com/tom-sato/items/037b8f8cb4b326710f71)
     - インストール後は下記流れで ユーザー、スキーマなどを作成
         - スーパーユーザーでログイン
             - `psql -U user_name`
@@ -59,7 +59,8 @@
       ```
 2. RSA Public & Private Keys の作成
     - opensslがインストールされていない場合はインストール→ [openssl](https://slproweb.com/products/Win32OpenSSL.html)
-    - 下記コマンドを実行してRSA Public & Private Keysを作成
+    - 下記コマンドを実行(またはhousehold-budget-book\bat\command\generate_rsa_keys.batを実行)してRSA Public & Private
+      Keysを作成
       ```
       # resources\config配下に移動する。下記だとエラーになるため環境ごとに変えること
       cd book-git-repository\study\src\main\resources\config\certs
@@ -73,10 +74,14 @@
 
 3. ビルドからログインまで
     - お好みで household-budget-book\study\src\main\resources\static\images 内の画像を好きな画像に変更する
-    - household-budget-book\study で `gradlew bootrun` コマンドを実施(もしくは
-      household-budget-book\bat\commond\bootrun.bat
-      を実行)することでビルドとサーバの起動が実行される
+    - household-budget-book\study で `gradlew :backend:bootRun` コマンドを実施(もしくは
+      household-budget-book\bat\command\run_springboot.bat
+      を実行)することでビルドとspring bootサーバの起動が実行される
+    - household-budget-book\study で `gradlew :frontend:runDevNext` コマンドを実施(もしくは
+      household-budget-book\bat\command\run_next.bat
+      を実行)することでビルドとnext js サーバの起動が実行される
     - サーバー起動後 admin/admin でシステム管理者としてログイン可能
+    - node taskが終了後も残り続ける場合はhousehold-budget-book\bat\command\kill_run_next.bat、kill_node_task.batでkill可能
 
 ### 開発環境(Kotlin - Intellij IDEA)
 
@@ -89,16 +94,8 @@
 
 ### 開発環境(js(ts) - Visual Studio Code)
 
-1. `gradlew --no-daemon watch` コマンド (もしくは household-budget-book\bat\commond\daemonwatch.bat) を起動することで js
-   のファイル監視が可能
-
-    - js のファイル監視がされている状態では js ファイルを編集、保存すると自動的にトラ
-      ンスパイルされ household-budget-book\study\src\main\resources\static 配下に出力され、サーバに反映される。
-    - js(ts、json) の formatter は prettier,eslint を使用して作成している(vscode
-      などを使用する場合は拡張機能として導入可能)
-
-2. プロジェクトを Visual Studio Code で開く
-3. 推奨される拡張機能の install
+1. プロジェクトを Visual Studio Code で開く
+2. 推奨される拡張機能の install
 
 ### デバッグ(js(ts))
 
@@ -109,9 +106,9 @@
 ### js(ts) のみビルドしたい場合
 
 1. ライブラリのインストール(更新)
-    - household-budget-book\study で`gradlew npmInstall`コマンドを実施
-2. webpack を使用し js をビルド
-    - household-budget-book\study で`gradlew webpack`コマンドを実施
+    - household-budget-book\study で`gradlew :frontend:npmInstall`コマンドを実施
+2. webpack を使用し next js をビルド
+    - household-budget-book\study で`gradlew frontend:buildNext`コマンドを実施
 
 ### その他
 
@@ -121,5 +118,3 @@
       文生成などのマクロが使用可能
 - 家計簿データの例は household-budget-book\example 配下に
     - 家計簿登録画面からそのまま登録可能
-- 一度ビルドからサーバー起動まで完了している場合は、household-budget-book\bat\bootrun_and_daemonwatch.bat からサーバーの起動、js
-  ファイル監視の起動をまとめて実行可能

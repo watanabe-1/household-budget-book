@@ -3,6 +3,7 @@ package org.book.app.study.util
 import org.book.app.study.service.AppUserDetails
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.core.userdetails.UserDetails
 import java.time.Clock
 import java.time.ZonedDateTime
 
@@ -23,14 +24,26 @@ object StudyUtils {
      * ユーザが取得できなかった時はノーユーザ(デフォルトユーザ)を返却する。
      */
     fun getLoginUser(): String =
-        SecurityContextHolder.getContext()?.authentication?.let { getUserIdFromAuthentication(it) } ?: getNoUser()
+        getCurrentAuthentication()?.let { getUserIdFromAuthentication(it) } ?: getNoUser()
 
     /**
-     * ログインユーザーIdを認証情報から取得。
-     * 認証情報がnullであることも考慮。
+     * 認証情報を取得
+     *
+     * @return
+     */
+    private fun getCurrentAuthentication(): Authentication? =
+        SecurityContextHolder.getContext().authentication
+
+    /**
+     * ログインユーザーIdを認証情報から取得
+     * 認証情報がnullであることも考慮
      */
     private fun getUserIdFromAuthentication(authentication: Authentication): String? =
-        (authentication.principal as? AppUserDetails)?.account?.userId
+        when (val principal = authentication.principal) {
+            is AppUserDetails -> principal.account.userId
+            is UserDetails -> principal.username
+            else -> authentication.name
+        }
 
     /**
      * 共通ユーザーIdを取得する。

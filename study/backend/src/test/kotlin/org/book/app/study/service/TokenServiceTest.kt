@@ -70,10 +70,10 @@ class TokenServiceTest {
         every { jwtEncoder.encode(any()) } returns jwt
 
         // メソッドをテスト
-        val token = tokenService.generateToken(authentication)
+        val tokenDto = tokenService.generateToken(authentication)
 
         // 期待される結果を検証
-        assertEquals(jwtTokenValue, token)
+        assertEquals(jwtTokenValue, tokenDto.token)
         verify(exactly = 1) { jwtEncoder.encode(any()) }
     }
 
