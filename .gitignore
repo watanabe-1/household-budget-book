@@ -11,7 +11,7 @@ HELP.md
 /study/backend/src/main/resources/static/images/
 
 ### SSH KEY ###
-/study/backend/src/main/resources/config/certs
+/study/backend/src/main/resources/config/certs/*
 
 ### DB ###
 database.properties
@@ -82,7 +82,6 @@ logs/
 node_modules/
 *.log
 
-
 ### JAR/WAR files ###
 *.jar
 *.war
@@ -98,3 +97,6 @@ tmp/
 *.tmp
 *.bak
 *.swp
+
+### Git ###
+!.gitkeep

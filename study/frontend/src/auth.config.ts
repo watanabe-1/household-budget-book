@@ -60,7 +60,7 @@ export default {
       return await refreshAccessToken(token);
     },
     async session({ session, token }) {
-      // JWTトークンからセッションに値を渡します
+      // JWTトークンからセッションに値を渡す
       session.user.name = token.user.name;
       session.user.accessToken = token.accessToken;
 

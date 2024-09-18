@@ -1,4 +1,4 @@
-"use client";
+"use server";
 import Login from "@/features/login/Login.client";
 
 const Page: React.FC = () => {
